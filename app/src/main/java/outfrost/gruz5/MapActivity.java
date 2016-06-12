@@ -1,5 +1,6 @@
 package outfrost.gruz5;
 
+import android.content.Intent;
 import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -76,16 +77,31 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
 	@Override
 	public boolean onMarkerClick(Marker marker) {
-		CharSequence text = "You clicked the marker "+marker.getTitle();
-		Toast toast = Toast.makeText(getApplicationContext(),text,Toast.LENGTH_SHORT);
-		toast.show();
-		return false;
+		int X = 0;//you can see how it works when we open new activity on clicking the marker or on clicking the infobox
+		if (X==1) {//opening the infobox and toast info of clicking marker
+			CharSequence text = "You clicked the marker " + marker.getTitle();
+			Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+			toast.show();
+			return false;
+		}
+		else {//opening new activity when marker clicked
+			Intent myIntent = new Intent(this,ShowOutletPointMapActivity.class);
+			myIntent.putExtra("title",marker.getTitle());
+			this.startActivity(myIntent);
+			return true;
+		}
 	}
 
 	@Override
 	public void onInfoWindowClick(Marker marker) {
+		//Toast for clicking
 		CharSequence text = "You clicked the info box of " + marker.getTitle();
 		Toast toast = Toast.makeText(getApplicationContext(),text,Toast.LENGTH_SHORT);
 		toast.show();
+		//opening new activity
+		Intent myIntent = new Intent(this,ShowOutletPointMapActivity.class);
+		myIntent.putExtra("title",marker.getTitle()); //providing new activity title of clicked marker
+		this.startActivity(myIntent);
+		//if we decide to use it this way we should add some kind of 'Click here fo details/map' under the name in the infobox
 	}
 }
