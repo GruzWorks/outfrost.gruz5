@@ -1,0 +1,5 @@
+<resources>
+	<string name="app_name">Gruz5</string>
+	<string name="title_activity_map">Gruz</string>
+	<string name="activity_map_entity_loading_error">An error occured while loading data</string>
+</resources>
