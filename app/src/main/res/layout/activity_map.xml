@@ -5,4 +5,5 @@
           android:name="com.google.android.gms.maps.SupportMapFragment"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          tools:context="outfrost.gruz5.MapActivity"/>
+          tools:context="outfrost.gruz5.MapActivity"
+    tools:layout="@layout/activity_map" />

@@ -3,6 +3,7 @@ package outfrost.gruz5;
 import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -13,9 +14,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
-		LocationSource.OnLocationChangedListener, GoogleApiClient.ConnectionCallbacks, GoogleMap.OnCameraChangeListener {
+		LocationSource.OnLocationChangedListener, GoogleApiClient.ConnectionCallbacks, GoogleMap.OnCameraChangeListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
 
 	private GoogleMap mMap;
 	private GoogleApiClient mGoogleApiClient;
@@ -46,6 +49,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 		mMap = googleMap;
 		mMap.setMyLocationEnabled(true);
 		mMap.setOnCameraChangeListener(this);
+		mMap.setOnMarkerClickListener(this);
+		mMap.setOnInfoWindowClickListener(this);
 	}
 
 	@Override
@@ -67,5 +72,20 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 	@Override
 	public void onCameraChange(CameraPosition cameraPosition) {
 		mapEntityStore.UpdateMap(cameraPosition, mMap, this);
+	}
+
+	@Override
+	public boolean onMarkerClick(Marker marker) {
+		CharSequence text = "You clicked the marker "+marker.getTitle();
+		Toast toast = Toast.makeText(getApplicationContext(),text,Toast.LENGTH_SHORT);
+		toast.show();
+		return false;
+	}
+
+	@Override
+	public void onInfoWindowClick(Marker marker) {
+		CharSequence text = "You clicked the info box of " + marker.getTitle();
+		Toast toast = Toast.makeText(getApplicationContext(),text,Toast.LENGTH_SHORT);
+		toast.show();
 	}
 }
