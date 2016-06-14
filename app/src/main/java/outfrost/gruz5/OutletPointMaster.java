@@ -25,10 +25,12 @@ public class OutletPointMaster extends OutletPoint {
 
 
 	@Override
-	protected void draw(GoogleMap map) {
-		map.addMarker(new MarkerOptions()
+	protected String draw(GoogleMap map) {
+		return map.addMarker(new MarkerOptions()
 				.position(this.getLocation())
-				.title(this.getName()));
+				.title(this.getName())
+				.visible(true))
+				.getId();
 	}
 
 	@Override

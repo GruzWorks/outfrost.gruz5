@@ -18,10 +18,8 @@ public abstract class MapEntity {
 		this.location = location;
 	}
 
-	public LatLng getLocation() {
-		return location;
-	}
+	public LatLng getLocation() { return location; }
 
-	protected abstract void draw(GoogleMap map);
+	protected abstract String draw(GoogleMap map);
 	protected abstract void click(Context context);
 }

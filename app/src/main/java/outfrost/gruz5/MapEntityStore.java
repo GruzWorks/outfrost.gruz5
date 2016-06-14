@@ -7,11 +7,13 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -25,12 +27,16 @@ public class MapEntityStore {
 	private static double SECTOR_PADDING = 0.1;	// Will not work correctly if >= 0.5
 
 	private Point currentSector;
-	private List<MapEntity> mapEntities;
+	private Map<String, MapEntity> mapEntities;
 	private long entityTypes;
 
 	public MapEntityStore(long entityTypes) {
-		this.mapEntities = new ArrayList<>();
+		this.mapEntities = new LinkedHashMap<>();
 		this.entityTypes = entityTypes;
+	}
+
+	public MapEntity getEntity(String markerId) {
+		return mapEntities.get(markerId);
 	}
 
 	public void UpdateMap(CameraPosition cameraPosition, GoogleMap map, Context context) {
@@ -61,22 +67,18 @@ public class MapEntityStore {
 			reloadRequired = true;
 		}
 		if (reloadRequired) {
-			mapEntities = new ArrayList<>();
+			mapEntities = new LinkedHashMap<>();
+			map.clear();
 			for (Map.Entry<MapEntityTypes, String> entityType : MapEntityTypes.fileSuffixes.entrySet()) {
 				if (MapEntityTypes.includesEntitiesOfType(this.entityTypes, entityType.getKey())) {
-					AddEntitiesToList(entityType.getKey(), context);
+					AddEntitiesToMapAndRender(entityType.getKey(), map, context);
 				}
-			}
-
-			map.clear();
-			for (MapEntity entity : mapEntities) {
-				entity.draw(map);
 			}
 		}
 	}
 
-	private void AddEntitiesToList(MapEntityTypes type, Context context) {
-		List<String> lines = LoadEntities(type, context);
+	private void AddEntitiesToMapAndRender(MapEntityTypes type, GoogleMap map, Context context) {
+		List<String> lines = LoadEntities(MapEntityTypes.fileSuffixes.get(type), context);
 
 		if (type == MapEntityTypes.OUTLET_POINT) {
 			for (String line : lines) {
@@ -91,20 +93,24 @@ public class MapEntityStore {
 					int floor = Integer.parseInt(outletPointInfo[6]);
 					long flags = Long.parseLong(outletPointInfo[7], 16);
 
+					MapEntity entity;
+					String key;
 					if (id_sub == 0) {
 						if (OutletPointFlags.hasFlags(flags, OutletPointFlags.HAS_SLAVES))
-							mapEntities.add(new OutletPointMaster(id, location, id_sub, place, flags, name));
+							key = (entity = new OutletPointMaster(id, location, id_sub, place, flags, name)).draw(map);
 						else
-							mapEntities.add(new OutletPointSingle(id, location, id_sub, place, flags, floor, name));
+							key = (entity = new OutletPointSingle(id, location, id_sub, place, flags, floor, name)).draw(map);
 					}
 					else
-						mapEntities.add(new OutletPointSlave(id, location, id_sub, place, flags, floor));
+						key = (entity = new OutletPointSlave(id, location, id_sub, place, flags, floor)).draw(map);
+
+					mapEntities.put(key, entity);
 				}
 			}
 		}
 	}
 
-	private List<String> LoadEntities(MapEntityTypes type, Context context) {
+	private List<String> LoadEntities(String fileSuffix, Context context) {
 		List<String> lines = new ArrayList<>();
 		for (int i = currentSector.y - RADIUS_SECTORS; i <= currentSector.y + RADIUS_SECTORS; i++) {
 			if (i >= -90 && i < 90) {
@@ -112,7 +118,7 @@ public class MapEntityStore {
 					int j = getSectorLngInRange(k);
 					String lat = String.format(Locale.ROOT, (i < 0) ? "s%1$03d" : "n%1$03d", i);
 					String lon = String.format(Locale.ROOT, (j < 0) ? "w%1$03d" : "e%1$03d", j);
-					int rawResourceId = context.getResources().getIdentifier(lat + lon + MapEntityTypes.fileSuffixes.get(type), "raw", context.getPackageName());
+					int rawResourceId = context.getResources().getIdentifier(lat + lon + fileSuffix, "raw", context.getPackageName());
 					if (rawResourceId != 0) {
 						BufferedReader dataReader = new BufferedReader(new InputStreamReader(context.getResources().openRawResource(rawResourceId)));
 						try {

@@ -25,10 +25,12 @@ public class OutletPointSlave extends OutletPoint {
 
 
 	@Override
-	protected void draw(GoogleMap map) {
-		map.addMarker(new MarkerOptions()
+	protected String draw(GoogleMap map) {
+		return map.addMarker(new MarkerOptions()
 				.position(this.getLocation())
-				.title(this.getPlace()));
+				.title(this.getPlace())
+				.visible(false))
+				.getId();
 	}
 
 	@Override

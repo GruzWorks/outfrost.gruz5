@@ -77,7 +77,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
 	@Override
 	public boolean onMarkerClick(Marker marker) {
-		int X = 0;//you can see how it works when we open new activity on clicking the marker or on clicking the infobox
+		/*int X = 1;//you can see how it works when we open new activity on clicking the marker or on clicking the infobox
 		if (X==1) {//opening the infobox and toast info of clicking marker
 			CharSequence text = "You clicked the marker " + marker.getTitle();
 			Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
@@ -89,18 +89,33 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 			myIntent.putExtra("title",marker.getTitle());
 			this.startActivity(myIntent);
 			return true;
-		}
+		}*/
+		return false;
 	}
 
 	@Override
 	public void onInfoWindowClick(Marker marker) {
-		//Toast for clicking
+		/*Toast for clicking
 		CharSequence text = "You clicked the info box of " + marker.getTitle();
 		Toast toast = Toast.makeText(getApplicationContext(),text,Toast.LENGTH_SHORT);
-		toast.show();
+		toast.show();*/
 		//opening new activity
 		Intent myIntent = new Intent(this,ShowOutletPointMapActivity.class);
-		myIntent.putExtra("title",marker.getTitle()); //providing new activity title of clicked marker
+		MapEntity entity = mapEntityStore.getEntity(marker.getId());
+		myIntent.putExtra("id", entity.id)
+				.putExtra("location", entity.getLocation());
+		if (entity instanceof OutletPoint) {
+			myIntent.putExtra("id_sub", ((OutletPoint) entity).id_sub)
+					.putExtra("place", ((OutletPoint) entity).getPlace())
+					.putExtra("flags", ((OutletPoint) entity).getFlags());
+			if (entity instanceof OutletPointSingle)
+				myIntent.putExtra("floor", ((OutletPointSingle) entity).getFloor())
+						.putExtra("name", ((OutletPointSingle) entity).getName());
+			else if (entity instanceof OutletPointMaster)
+				myIntent.putExtra("name", ((OutletPointMaster) entity).getName());
+			else if (entity instanceof OutletPointSlave)
+				myIntent.putExtra("floor", ((OutletPointSlave) entity).getFloor());
+		}
 		this.startActivity(myIntent);
 		//if we decide to use it this way we should add some kind of 'Click here fo details/map' under the name in the infobox
 	}

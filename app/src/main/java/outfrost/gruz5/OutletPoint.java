@@ -22,6 +22,8 @@ public abstract class OutletPoint extends MapEntity {
 		return place;
 	}
 
+	public long getFlags() { return flags; }
+
 	public boolean hasFlags(OutletPointFlags flags) {
 		return OutletPointFlags.hasFlags(this.flags, flags);
 	}
