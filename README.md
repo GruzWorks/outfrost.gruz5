@@ -5,7 +5,7 @@ Also known as **Project Thunderbolt app. 1**
 
 Authors: [Iwo Bujkiewicz][Github Outfrost], [Bartosz Rodziewicz][Github Baatochan]
 
-The program started as a project at the University.
+The app started as a project at the university.
 
 It will be the map of public places with public accessible power sockets to charge your phone or laptop.
 
